@@ -1,0 +1,60 @@
+<template>
+    
+    <lightning-card title="Nuevo Contacto">
+    <div class="slds-m-top_medium slds-m-bottom_x-large lgc-bg">
+        <h2 class="slds-text-heading_medium slds-m-bottom_medium slds-text-align_center">
+            Ingresa los datos del nuevo contacto
+        </h2>
+
+        <div class="slds-p-around_medium lgc-bg">
+            <lightning-input 
+                type="text" 
+                label="Ingresa tu(s) nombre(s)" 
+                value={firstName} 
+                onchange={handleInputChange} 
+                data-field="FirstName" 
+                required>
+            </lightning-input>
+        </div>
+
+        <div class="slds-p-around_medium lgc-bg">
+            <lightning-input 
+                type="text" 
+                label="Ingresa tu apellido paterno" 
+                value={lastName} 
+                onchange={handleInputChange} 
+                data-field="LastName" 
+                required>
+            </lightning-input>
+        </div>
+        
+        <div class="slds-p-around_medium lgc-bg">
+            <lightning-input 
+                type="text" 
+                label="Ingresa correo electrónico" 
+                value={email} 
+                onchange={handleInputChange} 
+                data-field="Email" 
+                required>
+            </lightning-input>
+        </div>
+
+        <div class="slds-m-top_small slds-m-bottom_medium lgc-bg slds-text-align_center">
+            <lightning-button 
+                label="Guardar Contacto" 
+                variant="brand-outline" 
+                onclick={handleSaveContact}>
+            </lightning-button>
+
+             <lightning-button 
+                label="Cancelar" 
+                variant="neutral" 
+                onclick={handleCancel} 
+                class="slds-m-left_x-small">
+            </lightning-button>
+        </div>
+
+        
+        </div>
+    </lightning-card>
+</template>
