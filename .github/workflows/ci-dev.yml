@@ -1,0 +1,44 @@
+#Definición de cuando debe correr el flujo de trabajo
+on:
+    workflow_dispatch:
+    push:
+        branches:
+            - dev
+        paths-ignore:
+            - 'sfdx-project.json'
+            - 'README.md'
+
+# Jobs to be executed
+jobs:
+    dev-build:
+        runs-on: ubuntu-latest
+        steps:
+            # Install Salesforce CLI
+            - name: 'Install Salesforce CLI'
+              run: |
+                  wget https://developer.salesforce.com/media/salesforce-cli/sfdx/channels/stable/sfdx-linux-x64.tar.xz
+                  mkdir ~/sfdx
+                  tar xJf sfdx-linux-x64.tar.xz -C ~/sfdx --strip-components 1
+                  echo "$HOME/sfdx/bin" >> $GITHUB_PATH
+                  ~/sfdx/bin/sfdx version
+
+            #  Checkout the source code
+
+            - name: 'Checkout source code'
+              uses: actions/checkout@v2
+
+            # Decrypt key
+            - name: 'Decrypt key'
+              run: 'openssl enc -nosalt -aes-256-cbc -d -in assets/salesforce.key.enc -out assets/salesforce.key -base64 -K ${{ secrets.DECRYPTION_KEY }} -iv ${{ secrets.DECRYPTION_IV }}'
+
+            # Authorize Org
+            - name: 'Authorize dev org'
+              run: 'sf org login jwt -r ${{ secrets.DEV_ENDPOINT }} -i ${{ secrets.DEV__CONSUMER_KEY }} -f assets/salesforce.key -o ${{ secrets.DEV_USER_NAME }} -a DEV'
+
+            # Convert Metadata
+            - name: 'Convert to mdapi'
+              run: 'sf project convert source --output-dir "force-app/fflib, force-app/main/default"  -d mdapi-source/src'
+
+            # # Deploy converted metadata
+            - name: 'Deploy mdapi'
+              run: 'sf project deploy start --metadata-dir mdapi-source/src -o DEV -w 15'
